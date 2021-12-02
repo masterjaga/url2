@@ -1,0 +1,148 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">  -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+  <title>URL Shortener</title>
+  <script type="text/javascript">
+    async function authPage(){
+      const token = localStorage.getItem('token');
+        if(!token){
+          location.assign("https://u-bit.me/login.html");
+
+          console.log('1');
+        } else {
+          const response = await fetch('https://rk-url-shortener-back-end.herokuapp.com/authenticateSession', {
+                            method: 'POST',
+                            headers: {
+                              'Authorization': `Bearer ${token}`,
+                              'Content-Type': 'application/json'
+                            }
+                          });
+          if(response.status !== 200){  
+            location.assign("https://u-bit.me/login.html");
+            console.log(2);
+          }                
+      }
+    }
+    authPage();
+  </script>
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="#">U-BIT</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto" >
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Home</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" onclick="logoutUser()">Sign Out</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-12">
+        <form onsubmit="shortenUrl()">
+          <div class="row border">
+            <div class="col-md-8 pt-3">
+              <div class="form-group">
+                <input type="text" class="form-control" id="longUrl" placeholder="URL to be shortened" required>
+                <small id="urlHelp" class="form-text text-danger hidden">Please Enter a valid URL</small>
+              </div>
+            </div>
+            <div class="col-md-4 pt-3" style="padding: 0 10px;">
+              <button style="width: 100% !important; font-size: 1rem;" type="submit" class="btn btn-primary" id="shortenUrlBtn">Shorten</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="row" id="shortenedUrlResult">
+      <div class="col-md-8 ml-10 text-truncate border" style="padding-top: 10px;">
+        <p id="originalUrl" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;max-width: 500px;"></p>
+      </div>
+      
+      <div class="col-md-4 ml-10 border" style="padding-top:10px;">
+        <a id="shortenedUrl"  href="" target="_blank"></a>
+      </div>
+    </div>
+    
+    <div class="row hidden" id="loadingIndicator">
+      <div class="offset-2 col-8 ml-10 loading-indicator">
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+      </div>
+    </div>
+
+    
+    <div class="container mt-5 border tableHeading">
+      <div class="row">
+        <div class="col-md-8  text-left"><h5>Your last five shortened URLs</h5></div>
+        <div class="col-md-4 pt-2">
+          <!-- <button class="btn btn-primary float-right hidden" id="getRecentBtn" onclick="getRecent()">Retry</button> -->
+        </div>
+      </div>
+    </div>
+    <table class="table table-striped table-hover customTableStyle">
+      <thead class="table-primary">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">URL</th>
+          <th scope="col">Short URl</th>
+          <th scope="col">Clicks</th>
+        </tr>
+      </thead>
+      <tbody id="recentTableBody">     
+      </tbody>
+    </table>
+
+    <div class="container mt-5 border tableHeading">
+      <div class="row">
+        <div class="col-md-8  text-left"><h5>Last five shortened URLs</h5></div>
+        <div class="col-md-4 pt-2">
+          <!-- <button class="btn btn-primary float-right hidden" id="getRecentAllBtn" onclick="getRecentAll()">Retry</button> -->
+        </div>
+      </div>
+    </div>
+    <table class="table table-striped table-hover customTableStyle">
+      <thead class="table-info">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">URL</th>
+          <th scope="col">Short URl</th>
+          <th scope="col">Clicks</th>
+        </tr>
+      </thead>
+      <tbody id="recentAllTableBody">     
+      </tbody>
+    </table>
+  </div>
+  
+  <script src="app.js"></script>
+</body>
+
+</html>
